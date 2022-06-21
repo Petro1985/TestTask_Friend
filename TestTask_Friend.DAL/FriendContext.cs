@@ -1,7 +1,7 @@
-﻿using DataAccessLayer.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TestTask_Friend.DAL.Entities;
 
-namespace DataAccessLayer;
+namespace TestTask_Friend.DAL;
 
 public class FriendContext : DbContext
 {
@@ -14,7 +14,7 @@ public class FriendContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<UserEntity>().HasIndex(prop => prop.Login).IsUnique();
-        modelBuilder.Entity<UserEntity>().Property(prop => prop.tg).IsRequired(false);
+        modelBuilder.Entity<UserEntity>().Property(prop => prop.Tg).IsRequired(false);
         modelBuilder.Entity<UserEntity>().Property(prop => prop.Email).IsRequired(false);
 
         base.OnModelCreating(modelBuilder);

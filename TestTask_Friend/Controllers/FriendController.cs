@@ -1,14 +1,14 @@
 using System.Dynamic;
 using System.Net;
-using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using TestTask_Friend.APIStruct;
+using TestTask_Friend.Errors;
 using TestTask_Friend.Services;
+using TestTask_Friend.Utils;
 
 namespace TestTask_Friend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class FriendController : ControllerBase
 {
     private readonly ILogger<FriendController> _logger;
@@ -20,32 +20,49 @@ public class FriendController : ControllerBase
         _userService = userService;
     }
 
+    /// <summary>
+    /// Return user without password from database (by ID)
+    /// </summary>
+    /// <param name="id">User ID</param>
     [HttpGet("v1/user")]
-    public async Task<IActionResult> GetUserInfo([FromQuery] int id)
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUserInfo([FromQuery] int id, CancellationToken cancellationToken)
     {
-        var user = await _userService.Get(id);
-        if (user is null) return BadRequest(new ErrorResponse(3, $"There is no user with ID={id} in DataBase"));
-        return Ok(user);
+        var result = await _userService.Get(id, cancellationToken);
+        return result.ToActionResult();
     }
 
+    /// <summary>
+    /// Register user 
+    /// </summary>
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IError), StatusCodes.Status400BadRequest)]
     [HttpPost("v1/auth/register")]
-    public async Task<IActionResult> Registration(User user)
+    public async Task<IActionResult> Registration(UserRequest user, CancellationToken cancellationToken)
     {
-        var result = await _userService.Set(user);
-        if (!result.IsSuccessful) return BadRequest(
-            new ErrorResponse(1, string.Join(';', result.Error!))
-            );
-        return Ok(result.Result);
+        var result = await _userService.Set(user, cancellationToken);
+        return result.ToActionResult();
     }
     
+    /// <summary>
+    /// User log in 
+    /// </summary>
+    /// <param name="userCredentials"></param>
     [HttpPost("v1/auth/login")]
-    public async Task<IActionResult> Login(UserCredentials userCredentials)
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login(UserCredentials userCredentials, CancellationToken cancellationToken)
     {
-        
-        var result = await _userService.Authentication(userCredentials);
-        if (!result.IsSuccessful) return BadRequest(new ErrorResponse(2, result.Error!));
-
-        return Ok(result.Result.Id);
+        var result = await _userService.Authentication(userCredentials, cancellationToken);
+        return result.ToActionResult();
     }
     
 }
+
+// enum ErrorCodes
+// {
+//     ValidationFailed,
+//     AuthenticationFailed,
+//     UserDoesNotExist,
+// }

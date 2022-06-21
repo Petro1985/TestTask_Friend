@@ -4,7 +4,9 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-      <UserSecretsId>ba1f767e-1486-47f1-b5f5-6b3c4f3f83c0</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+        <UserSecretsId>ba1f767e-1486-47f1-b5f5-6b3c4f3f83c0</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+      <ProjectReference Include="..\TestTask_Friend.DAL\TestTask_Friend.DAL.csproj" />
     </ItemGroup>
 
 </Project>

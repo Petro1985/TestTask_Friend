@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Entities;
-using DataAccessLayer.Repository;
 using TestTask_Friend.APIStruct;
+using TestTask_Friend.DAL.Entities;
+using TestTask_Friend.DAL.Repository;
+using TestTask_Friend.Errors;
 using TestTask_Friend.Utils;
 using TestTask_Friend.Validators;
 
@@ -11,46 +12,51 @@ class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-    private readonly IValidator<User> _userValidator;
+    private readonly IValidator<UserRequest> _userValidator;
 
-    public UserService(IUserRepository userRepository, IMapper mapper, IValidator<User> userValidator)
+    public UserService(IUserRepository userRepository, IMapper mapper, IValidator<UserRequest> userValidator)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _userValidator = userValidator;
     }
 
-    public async Task<User?> Get(int id)
+    public async Task<OperationResult<UserResponse>> Get(int id, CancellationToken cancellationToken)
     {
-        var userFromDb = await  _userRepository.GetById(id);
-        return userFromDb is null ? null : _mapper.Map<User>(userFromDb);
+        var userFromDb = await  _userRepository.GetById(id, cancellationToken);
+
+        if (userFromDb is null)
+            return new OperationResult<UserResponse>(new UserNotFoundError(id));
+        
+        return new OperationResult<UserResponse>(_mapper.Map<UserResponse>(userFromDb));
     }
 
-    public async Task<OperationResult<int, IReadOnlyCollection<string>>> Set(User user)
+    public async Task<OperationResult<int>> Set(UserRequest user, CancellationToken cancellationToken)
     {
         var validationResult = _userValidator.Validate(user);
+        
         if (validationResult.IsError)
-            return new OperationResult<int, IReadOnlyCollection<string>>(validationResult.GetErrors());
+            return new OperationResult<int>(new ValidationError(validationResult));
 
-        var userFromDb = await _userRepository.GetByLogin(user.login);
+        var userFromDb = await _userRepository.GetByLogin(user.Login, cancellationToken);
         
         if (userFromDb is not null) 
-            return new OperationResult<int, IReadOnlyCollection<string>>(
-                new List<string>{$"User with login={user.login} is already exist"}
-                );
+            return new OperationResult<int>(new LoginIsBusyError(user.Login));
         
         var mappedUser = _mapper.Map<UserEntity>(user);
-        var newUserId = await _userRepository.Set(mappedUser);
+        var newUserId = await _userRepository.Set(mappedUser, cancellationToken);
 
-        return new OperationResult<int, IReadOnlyCollection<string>>(newUserId);
+        return new OperationResult<int>(newUserId);
     }
 
-    public async Task<OperationResult<UserEntity, string>> Authentication(UserCredentials userCredentials)
+    public async Task<OperationResult<int>> Authentication(UserCredentials userCredentials, CancellationToken cancellationToken)
     {
-        var userFromDb = await _userRepository.GetByLogin(userCredentials.login);
+        var userFromDb = await _userRepository.GetByLogin(userCredentials.login, cancellationToken);
         
-        if (userFromDb is null || userFromDb.Password != userCredentials.password) return new OperationResult<UserEntity, string>("Wrong login or password");
-        return new OperationResult<UserEntity, string>(userFromDb);
+        if (userFromDb is null || userFromDb.Password != userCredentials.password)
+            return new OperationResult<int>(new AuthenticationError());
+        
+        return new OperationResult<int>(userFromDb.Id);
     }
 }
 

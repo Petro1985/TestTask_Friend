@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using TestTask_Friend.Controllers;
+using TestTask_Friend.DAL.Entities;
 
 namespace TestTask_Friend.APIStruct.MapperProfiles;
 
@@ -9,41 +9,20 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.tg
-                , options =>
-                    options.MapFrom(propFrom => propFrom.tg)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Email
-                , options =>
-                    options.MapFrom(propFrom => propFrom.email)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Id
-                , options =>
-                    options.MapFrom(propFrom => propFrom.id)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Login
-                , options =>
-                    options.MapFrom(propFrom => propFrom.login)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Name
-                , options =>
-                    options.MapFrom(propFrom => propFrom.name)).ReverseMap();
-        CreateMap<User, UserEntity>()
+        CreateMap<UserResponse, UserEntity>()
             .ForMember(prop => prop.Password
-                , options =>
-                    options.MapFrom(propFrom => propFrom.password)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Phone
-                , options =>
-                    options.MapFrom(propFrom => propFrom.phone)).ReverseMap();
-        CreateMap<User, UserEntity>()
-            .ForMember(prop => prop.Phone
-                , options =>
-                    options.MapFrom(propFrom => propFrom.phone)).ReverseMap();
-        CreateMap<User, UserEntity>()
+                , option => option.Ignore())
+            .ReverseMap();
+
+        CreateMap<UserRequest, UserEntity>()
+            .ForMember(prop => prop.Id, option => option.Ignore());
+
+        CreateMap<UserResponse, UserEntity>()
             .ForMember(prop => prop.Birth
-                , options =>
-                    options.MapFrom(propFrom => propFrom.birth)).ReverseMap();
+                , option => option
+                    .MapFrom(propFrom => propFrom.Birth)).ReverseMap();
+        
+        CreateMap<DateTime, DateOnly>().ConvertUsing(prop => DateOnly.FromDateTime(prop));
+        CreateMap<DateOnly, DateTime>().ConvertUsing(prop => prop.ToDateTime(TimeOnly.MinValue));
     }
 }
