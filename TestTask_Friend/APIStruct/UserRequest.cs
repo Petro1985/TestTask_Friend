@@ -6,7 +6,7 @@ public class UserRequest
 {
     public string Phone { get; set; }
     public string Login { get; set; }
-    public string Password { get; set; } // for records, I don't support openly saving password in database
+    public string Password { get; set; }
     public string Name { get; set; }
     
     public DateTime Birth { get; set; }

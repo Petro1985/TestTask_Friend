@@ -23,7 +23,8 @@ public class FriendController : ControllerBase
     /// <summary>
     /// Return user without password from database (by ID)
     /// </summary>
-    /// <param name="id">User ID</param>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
     [HttpGet("v1/user")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IError), StatusCodes.Status400BadRequest)]
@@ -46,9 +47,10 @@ public class FriendController : ControllerBase
     }
     
     /// <summary>
-    /// User log in 
+    /// User log in  
     /// </summary>
     /// <param name="userCredentials"></param>
+    /// <param name="cancellationToken"></param>
     [HttpPost("v1/auth/login")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IError), StatusCodes.Status400BadRequest)]
@@ -59,10 +61,3 @@ public class FriendController : ControllerBase
     }
     
 }
-
-// enum ErrorCodes
-// {
-//     ValidationFailed,
-//     AuthenticationFailed,
-//     UserDoesNotExist,
-// }

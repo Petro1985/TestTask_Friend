@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using TestTask_Friend.Controllers;
 using TestTask_Friend.DAL.Entities;
 
 namespace TestTask_Friend.APIStruct.MapperProfiles;
