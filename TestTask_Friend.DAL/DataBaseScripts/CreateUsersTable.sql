@@ -1,4 +1,7 @@
-﻿\connect FriendDataBase;
+﻿create database "FriendDataBase"
+    with owner postgres;
+
+\connect FriendDataBase;
 
 create table "Users"
 (

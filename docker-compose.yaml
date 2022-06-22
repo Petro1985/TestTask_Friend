@@ -6,7 +6,6 @@ services:
       - "8080:5265"
     environment:
       ConnectionString: "Server=db;Port=5432;Database=FriendDataBase;User Id=postgres;password=1;"
-      ASPNETCORE_URLS: "http://localhost:5265"
     depends_on:
       - db
   db:
