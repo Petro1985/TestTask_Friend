@@ -21,7 +21,7 @@ class UserService : IUserService
         _userValidator = userValidator;
     }
 
-    public async Task<OperationResult<UserResponse>> Get(int id, CancellationToken cancellationToken)
+    public async Task<OperationResult<UserResponse>> Get(int id, CancellationToken cancellationToken = default)
     {
         var userFromDb = await  _userRepository.GetById(id, cancellationToken);
 
@@ -31,7 +31,7 @@ class UserService : IUserService
         return new OperationResult<UserResponse>(_mapper.Map<UserResponse>(userFromDb));
     }
 
-    public async Task<OperationResult<int>> Set(UserRequest user, CancellationToken cancellationToken)
+    public async Task<OperationResult<int>> Set(UserRequest user, CancellationToken cancellationToken = default)
     {
         var validationResult = _userValidator.Validate(user);
         
@@ -49,11 +49,11 @@ class UserService : IUserService
         return new OperationResult<int>(newUserId);
     }
 
-    public async Task<OperationResult<int>> Authentication(UserCredentials userCredentials, CancellationToken cancellationToken)
+    public async Task<OperationResult<int>> Authentication(UserCredentials userCredentials, CancellationToken cancellationToken = default)
     {
-        var userFromDb = await _userRepository.GetByLogin(userCredentials.login, cancellationToken);
+        var userFromDb = await _userRepository.GetByLogin(userCredentials.Login, cancellationToken);
         
-        if (userFromDb is null || userFromDb.Password != userCredentials.password)
+        if (userFromDb is null || userFromDb.Password != userCredentials.Password)
             return new OperationResult<int>(new AuthenticationError());
         
         return new OperationResult<int>(userFromDb.Id);

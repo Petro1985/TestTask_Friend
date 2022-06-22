@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8080:5265"
+    environment:
+      ConnectionString: "Server=db;Port=5432;Database=FriendDataBase;User Id=postgres;password=1;"
+      ASPNETCORE_URLS: "http://localhost:5265"
+    depends_on:
+      - db
+  db:
+    image: "postgres:14.4-alpine"
+    environment:
+      POSTGRES_PASSWORD: "1"
+    volumes:
+      - "./TestTask_Friend.DAL/DataBaseScripts/:/docker-entrypoint-initdb.d/"
+
